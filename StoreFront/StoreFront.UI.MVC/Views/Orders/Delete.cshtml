@@ -1,0 +1,66 @@
+﻿@model StoreFront.DATA.EF.Models.Order
+
+@{
+    ViewData["Title"] = "Delete Order" + Model.OrderId + "?";
+}
+
+@* <h1>Delete</h1> *@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="section-tittle mb-60 text-center pt-10">
+                <h2>Delete Order @Model.OrderId?</h2>
+
+            </div>
+        </div>
+    </div>
+</div>
+<h3 class="alert alert-danger">Are you sure you want to delete Order @Model.OrderId? This action cannot be undone!</h3>
+<div>
+    @* <h4>Order</h4>
+    <hr /> *@
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.OrderDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.OrderDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ShipToName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ShipToName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ShipCity)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ShipCity)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ShipState)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ShipState)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ShipZip)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ShipZip)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Customer)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Customer.CustomerId)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="OrderId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to Orders</a>
+    </form>
+</div>

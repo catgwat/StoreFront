@@ -1,0 +1,65 @@
+﻿@model IEnumerable<StoreFront.DATA.EF.Models.Category>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+@* <h1>@ViewData["Title"]</h1> *@
+
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="section-tittle mb-60 text-center pt-10">
+                <h2>Categories</h2>
+                <p align="center">
+                    @if (User.IsInRole("Admin"))
+            {
+                    <a asp-action="Create" class="genric-btn primary circle">Create New Category</a>
+            }
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoryName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoryDescription)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryDescription)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
+                @* <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> | *@
+                    @if (item.Products.Count() == 0)//item.OrderProducts retrieves any related records for the Product
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
+
+                    }
+                    else
+                    {
+                        <a disabled="true" class="text-danger" style="text-decoration: line-through;" title="Can't delete - referenced by other records.">Delete</a>
+                    }
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

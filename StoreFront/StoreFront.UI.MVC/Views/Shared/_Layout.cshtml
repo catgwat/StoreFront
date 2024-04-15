@@ -1,0 +1,338 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+
+@{
+    //Create a bool that determines whether there are items in the cart
+    bool cartHasProducts = false;
+
+    //Create a variable to store the number of products
+    int productCount = 0;
+
+    //Check if the "cart" string exists in Session
+    if (!String.IsNullOrEmpty(Context.Session.GetString("cart")))
+    {
+        //if we fall into this scope, the cart exists. Flip the bool.
+        cartHasProducts = true;
+
+        //Create the dictionary to hold the cart items
+        var products = new Dictionary<int, CartItemViewModel>();
+
+        //Deserialize the session cart and store it in the dictionary
+        products = JsonConvert.DeserializeObject<Dictionary<int, CartItemViewModel>>(Context.Session.GetString("cart"));
+
+        //reassign our counter the sum of the Qty of CartItems
+        productCount = products.Sum(p => p.Value.Qty);
+    }
+}
+
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Beauty Supply</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/img/favicon.ico">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/assets/css/slicknav.css">
+    <link rel="stylesheet" href="~/assets/css/flaticon.css">
+    <link rel="stylesheet" href="~/assets/css/progressbar_barfiller.css">
+    <link rel="stylesheet" href="~/assets/css/gijgo.css">
+    <link rel="stylesheet" href="~/assets/css/animate.min.css">
+    <link rel="stylesheet" href="~/assets/css/animated-headline.css">
+    <link rel="stylesheet" href="~/assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="~/assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="~/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="~/assets/css/slick.css">
+    <link rel="stylesheet" href="~/assets/css/nice-select.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" href="~/css/PagedList.css" />
+    <link rel="stylesheet" href="~/assets/css/style.css">
+    <link rel="stylesheet" href="~/assets/css/custom.css" />
+
+</head>
+<body class="full-wrapper">
+    <!-- ? Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="~/assets/img/logo/loder.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Preloader Start-->
+    <header>
+        <!-- Header Start -->
+        <div class="header-area ">
+            <div class="main-header header-sticky">
+                <div class="container-fluid">
+                    <div class="menu-wrapper d-flex align-items-center justify-content-between">
+                        <div class="header-left d-flex align-items-center">
+                            <!-- Logo -->
+                            <div class="logo">
+                                <a asp-action="Index" asp-controller="Home"><img src="~/assets/img/logo/simplelogo.png" alt=""></a>
+                            </div>
+                            <!-- Main-menu -->
+                            <div class="main-menu  d-none d-lg-block">
+                                <nav>
+                                    <ul id="navigation">
+                                        <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+                                        <li><a asp-action="Index" asp-controller="Products">Shop</a></li>
+                                        
+                                        <li><a asp-action="Contact" asp-controller="Home">Contact</a></li>
+                                       
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                            @* <li class="nav-item dropdown">
+                                                @* <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true"> <span class="nav-label">Admin <span class="caret"></span></a>
+                                                <ul class="dropdown-menu"> 
+                                                    <li><a asp-action="ListUsers" asp-controller="Administration">Users</a></li>
+                                                    <li><a asp-action="ListRoles" asp-controller="Administration">Roles</a></li>
+                                                    <li><a asp-action="Index" asp-controller="Categories">Categories</a></li>
+                                                </ul>
+                                            </li> *@
+                                            <li>
+                                                <a href="#">Admin</a>
+                                                <ul class="submenu">
+                                                    <li><a asp-action="ListUsers" asp-controller="Administration">Users</a></li>
+                                                    <li><a asp-action="ListRoles" asp-controller="Administration">Roles</a></li>
+                                                    <li><a asp-action="Index" asp-controller="Categories">Categories</a></li>  
+
+                                                </ul>
+                                            </li>
+                                            }
+
+                                        @if (signInManager.IsSignedIn(User))
+                                        {
+                                            //SECURITY & ROLES - STEP 09
+                                            //The above if check is asking whether the User is logged in before conditionally
+                                            //rendering the li for the Orders View. FOR THIS TO WORK, we NEED the using for
+                                            //Identity and we need to inject the signInManager into this View
+                                            <li class="nav-item">
+                                                <a class="nav-link" asp-action="Index" asp-controller="Orders">Orders</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <partial name="_LoginPartial" />
+                        <li class="nav-item">
+                            @* SHOPPING CART - STEP 19
+                            Update the shopping cart link to point to the Index Action in the ShoppingCartController(already did this in class yesterday)
+                            *@
+                            <a class="nav-link" asp-action="Index" asp-controller="ShoppingCart">
+                                <sup>@productCount</sup>
+                                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
+                                <g>
+                                <g>
+                                <path d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
+                                          c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z" />
+                                    </g>
+                                 </g>
+                                <g>
+                                <g>
+                                <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
+                                          C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
+                                          c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
+                                          C457.728,97.71,450.56,86.958,439.296,84.91z" />
+                                    </g>
+                                 </g>
+                                <g>
+                                <g>
+                                <path d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
+                                          c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z" />
+                                    </g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                                <g>
+                                 </g>
+                              </svg>
+                            </a>
+                        </li>
+                        
+                        <!-- Mobile Menu -->
+                        <div class="col-12">
+                            <div class="mobile_menu d-block d-lg-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Header End -->
+    </header>
+    <!-- header end -->
+    
+    <div class="container">
+        @RenderBody()
+    </div>
+
+
+    <footer>
+        <!-- Footer Start-->
+        <div class="footer-area footer-padding">
+            <div class="container-fluid ">
+                <div class="row d-flex justify-content-between">
+                    <div class="col-xl-3 col-lg-3 col-md-8 col-sm-8">
+                        <div class="single-footer-caption mb-50">
+                            <div class="single-footer-caption mb-30">
+                                <!-- logo -->
+                                <div class="footer-logo mb-35">
+                                    <a href="index.html"><img src="~/assets/img/logo/simplefooterlogo.png" alt=""></a>
+                                </div>
+                                <div class="footer-tittle">
+                                    <div class="footer-pera">
+                                        <p>A beauty supply store for all of your hair, nail, and makeup needs.</p>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4">
+                        <div class="single-footer-caption mb-5">
+                            <div class="footer-tittle">
+                                <h4>Quick links</h4>
+                                <ul>
+                                    <li><a asp-action="Index" asp-controller="Products">Shop</a></li>
+                                    <li><a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
+                                    <li><a asp-area ="Identity" asp-page="/Account/Register">Register</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4">
+                        <div class="single-footer-caption mb-5">
+                            <div class="footer-tittle">
+                                <h4>Get in touch</h4>
+                                <ul>
+                                    <li><a asp-action="Contact" asp-controller="Home">Contact</a></li>
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- footer-bottom area -->
+        <div class="footer-bottom-area">
+            <div class="container">
+                <div class="footer-border">
+                    <div class="row d-flex align-items-center">
+                        <div class="col-xl-12 ">
+                            <div class="footer-copy-right text-center">
+                                <p>
+                                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End-->
+    </footer>
+    <!--? Search model Begin -->
+    <div class="search-model-box">
+        <div class="h-100 d-flex align-items-center justify-content-center">
+            <div class="search-close-btn">+</div>
+            <form class="search-model-form">
+                <input type="text" id="search-input" placeholder="Searching key.....">
+            </form>
+        </div>
+    </div>
+    <!-- Search model end -->
+    <!-- Scroll Up -->
+    <div id="back-top">
+        <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+    </div>
+
+    <!-- JS here -->
+    <!-- Jquery, Popper, Bootstrap -->
+    <script src="../.././assets/js/vendor/modernizr-3.5.0.min.js"></script>
+    <script src="../.././assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="../.././assets/js/popper.min.js"></script>
+    <script src="../.././assets/js/bootstrap.min.js"></script>
+
+    <!-- Slick-slider , Owl-Carousel ,slick-nav -->
+    <script src="../.././assets/js/owl.carousel.min.js"></script>
+    <script src="../.././assets/js/slick.min.js"></script>
+    <script src="../.././assets/js/jquery.slicknav.min.js"></script>
+
+    <!-- One Page, Animated-HeadLin, Date Picker -->
+    <script src="../.././assets/js/wow.min.js"></script>
+    <script src="../.././assets/js/animated.headline.js"></script>
+    <script src="../.././assets/js/jquery.magnific-popup.js"></script>
+    <script src="../.././assets/js/gijgo.min.js"></script>
+
+    <!-- Nice-select, sticky,Progress -->
+    <script src="../.././assets/js/jquery.nice-select.min.js"></script>
+    <script src="../.././assets/js/jquery.sticky.js"></script>
+    <script src="../.././assets/js/jquery.barfiller.js"></script>
+
+    <!-- counter , waypoint,Hover Direction -->
+    <script src="../.././assets/js/jquery.counterup.min.js"></script>
+    <script src="../.././assets/js/waypoints.min.js"></script>
+    <script src="../.././assets/js/jquery.countdown.min.js"></script>
+    <script src="../.././assets/js/hover-direction-snake.min.js"></script>
+
+    <!-- contact js -->
+    <script src="../.././assets/js/contact.js"></script>
+    <script src="../.././assets/js/jquery.form.js"></script>
+    <script src="../.././assets/js/jquery.validate.min.js"></script>
+    <script src="../.././assets/js/mail-script.js"></script>
+    <script src="../.././assets/js/jquery.ajaxchimp.min.js"></script>
+
+    <!-- Jquery Plugins, main Jquery -->
+    <script src="../.././assets/js/plugins.js"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> @*CLIENT SIDE FILTERING - STEP 03*@
+    <!-- AJAX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajax-unobtrusive/3.2.6/jquery.unobtrusive-ajax.min.js" integrity="sha512-DedNBWPF0hLGUPNbCYfj8qjlEnNE92Fqn7xd3Sscfu7ipy7Zu33unHdugqRD3c4Vj7/yLv+slqZhMls/4Oc7Zg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="../.././assets/js/main.js"></script>
+
+    @RenderSection("scripts", false)
+
+</body>
+</html>

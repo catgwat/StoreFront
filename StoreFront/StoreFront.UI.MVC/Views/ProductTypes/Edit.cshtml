@@ -1,0 +1,49 @@
+﻿@model StoreFront.DATA.EF.Models.ProductType
+
+@{
+    ViewData["Title"] = "Modify" + Model.ProductTypeName;
+}
+
+@* <h1>Edit</h1>
+
+<h4>ProductType</h4>
+<hr /> *@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="section-tittle mb-60 text-center pt-10">
+                <h2>Modify @Model.ProductTypeName</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ProductTypeId" />
+            <div class="form-group">
+                <label asp-for="ProductTypeName" class="control-label"></label>
+                <input asp-for="ProductTypeName" class="form-control" />
+                <span asp-validation-for="ProductTypeName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductTypeDescription" class="control-label"></label>
+                <input asp-for="ProductTypeDescription" class="form-control" />
+                <span asp-validation-for="ProductTypeDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mb-3">
+    <a asp-action="Index">Back to Product Type List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

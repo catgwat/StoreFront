@@ -1,0 +1,70 @@
+﻿@model StoreFront.DATA.EF.Models.Product
+
+@{
+    ViewData["Title"] = "Delete " + Model.ProductName + "?";
+}
+
+@* <h1>@ViewData["Title"]</h1> *@
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="section-tittle mb-60 text-center pt-10">
+                <h2>Delete @Model.ProductName?</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<h3 class="alert alert-danger">Are you sure you want to delete @Model.ProductName? This action cannot be undone!</h3>
+
+    @* <h4>Product</h4>
+    <hr /> *@
+<div class="row mb-3">
+    <div class="col-md-6 text-center">
+        <img src="~/images/@Model.ProductImage" alt="@Model.ProductName" longdesc="@Model.ProductDescription" class="img-fluid" />
+        <p class="text-info mt-3">
+            @Html.DisplayFor(model => model.ProductDescription)
+        </p>
+    </div>
+    <div class="col-md-4 offset-md-1">
+        <p class="h3">
+            <strong>@Html.DisplayNameFor(model => model.ProductPrice):</strong>
+            @Html.DisplayFor(model => model.ProductPrice)
+        </p>
+        <p class="h3">
+            <strong>@Html.DisplayNameFor(model => model.UnitsInStock):</strong>
+            @Html.DisplayFor(model => model.UnitsInStock)
+        </p>
+        <p class="h3">
+            <strong>@Html.DisplayNameFor(model => model.Category.CategoryName):</strong>
+            @Html.DisplayFor(model => model.Category.CategoryName)
+        </p>
+        <p class="h3">
+            <strong>@Html.DisplayNameFor(model => model.Tool):</strong>
+            @Html.DisplayFor(model => model.Tool)
+        </p>
+        <p class="h3">
+            <strong>@Html.DisplayNameFor(model => model.ProductType):</strong>
+            @Html.DisplayFor(model => model.ProductType.ProductTypeName)
+        </p>
+        <p class="h3">
+            <strong>@Html.DisplayNameFor(model => model.ProductStatus):</strong>
+            @Html.DisplayFor(model => model.ProductStatus.Status)
+        </p>
+        <p class="h3">
+            <strong>@Html.DisplayNameFor(model => model.MillilitersPerUnit):</strong>
+            @Html.DisplayFor(model => model.MillilitersPerUnit)
+        </p>
+        <p class="h3">
+            <strong>@Html.DisplayNameFor(model => model.OuncesPerUnit):</strong>
+            @Html.DisplayFor(model => model.OuncesPerUnit)
+        </p>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ProductId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to Products</a>
+    </form>
+</div>

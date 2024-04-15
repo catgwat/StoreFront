@@ -1,0 +1,89 @@
+﻿@model IEnumerable<StoreFront.DATA.EF.Models.Order>
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+@* <h1>Index</h1> *@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="section-tittle mb-60 text-center pt-10">
+                <h2>Orders</h2>
+                <p align="center">
+                    @if (User.IsInRole("Admin"))
+            {
+                    <a asp-action="Create" class="genric-btn primary circle">Create New Order</a>
+            }
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShipToName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShipCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShipState)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShipZip)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.OrderId">
+                @Html.DisplayFor(modelItem => item.OrderDate)
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShipToName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShipCity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShipState)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShipZip)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.CustomerId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
+                @* <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> | *@
+                    @if (item.OrderProducts.Count() == 0)//item.OrderProducts retrieves any related records for the Product
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+
+                    }
+                    else
+                    {
+                        <a disabled="true" class="text-danger" style="text-decoration: line-through;" title="Can't delete - referenced by other records.">Delete</a>
+                    }
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

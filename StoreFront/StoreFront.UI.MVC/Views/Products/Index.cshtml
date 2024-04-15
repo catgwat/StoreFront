@@ -1,0 +1,178 @@
+﻿@model IEnumerable<StoreFront.DATA.EF.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+@*  <h1>@ViewData["Title"]</h1>  *@
+
+
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="section-tittle mb-60 text-center pt-10">
+                <h2>Products</h2>
+                <p align="center">
+                    @if (User.IsInRole("Admin"))
+            {
+                    <a asp-action="Create" class="genric-btn primary circle">Add New Product</a>
+            }
+                    <a asp-action="TiledProducts" class="genric-btn primary-border circle mx-4">Tile View</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div id="MessageContent" class="text-center"></div>
+    </div>
+</div>
+
+<section class="product-section pb-4 pt-4 mb-4">
+    <table class="table" id="ProductsTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductImage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductPrice)
+            </th>
+            @* <th>
+                @Html.DisplayNameFor(model => model.ProductDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitsInStock)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitsOnOrder)
+            </th>
+            @* <th>
+                @Html.DisplayNameFor(model => model.SupplierId)
+            </th> *@
+            
+            @* <th>
+                @Html.DisplayNameFor(model => model.OuncesPerUnit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MillilitersPerUnit)
+            </th>  *@
+            <th>
+                @Html.DisplayNameFor(model => model.Tool)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            @* <th>
+                @Html.DisplayNameFor(model => model.ProductType)
+            </th> *@
+            @* <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th> *@
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr id="Products-@item.ProductId">
+            <td>
+                @* @Html.DisplayFor(modelItem => item.ProductImage) *@
+                <img src="~/assets/img/t_@item.ProductImage" class="img-fluid" alt="@item.ProductName" />
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.ProductId">
+                @Html.DisplayFor(modelItem => item.ProductName)
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductPrice)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.ProductDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitsInStock)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitsOnOrder)
+            </td>
+             <td>
+                @Html.DisplayFor(modelItem => item.SupplierId)
+            </td> 
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.OuncesPerUnit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MillilitersPerUnit)
+                </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.Tool)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+            </td>
+            @* <td>
+                @Html.DisplayFor(modelItem => item.ProductType.ProductTypeName)
+            </td> *@
+            @* <td>
+                @Html.DisplayFor(modelItem => item.Status.Status)
+            </td> *@
+            <td>
+
+                @if (User.IsInRole("Admin")) {
+                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> 
+                    
+                    @if(item.OrderProducts.Count() == 0)//item.OrderProducts retrieves any related records for the Product
+                    {
+                        <a data-ajax="true" data-ajax-confirm="Are you sure you want to delete @item.ProductName?"
+                        data-ajax-failure="deleteFailed" data-ajax-success="deleteConfirmed" data-ajax-method="POST"
+                        href="~/Products/AjaxDelete/@item.ProductId">
+                            Delete
+                        </a>
+
+                    }
+                    else
+                    {
+                        <a disabled="true" class="text-danger" style="text-decoration: line-through;" title="Can't delete - referenced by other records.">Delete</a>
+                    }
+                }     
+                    </td>
+        </tr>
+    }
+    </tbody>
+    </table>
+</section>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            //Update the selector to target the element with the table class
+            $('.table').DataTable();
+        });
+
+        //************************************AJAX DELETE************************************/
+        function deleteConfirmed(response, status, data) {
+            //remove the row from the table
+            let rowId = "#Product-" + response.id;
+            console.log(rowId);
+            $("#ProductsTable").find(rowId).remove();
+
+            //display the status message
+            $("#MessageContent").html("<div class='alert alert-success'>" + response.message + "</div>");
+        }
+
+        function deleteFailed(response, status, data) {
+            //display status message
+            $("#MessageContent").html("<div class='alert alert-danger'>Delete unsuccessful.</div>");
+        }
+
+    </script>
+}

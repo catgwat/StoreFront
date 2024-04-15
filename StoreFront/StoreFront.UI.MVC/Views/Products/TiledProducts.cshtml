@@ -1,0 +1,105 @@
+﻿@model IPagedList<StoreFront.DATA.EF.Models.Product>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+
+@{
+    ViewData["Title"] = "Tiled Products";
+}
+
+<!--? New Arrival Start -->
+<div class="new-arrival">
+    <div class="container">
+        <!-- Section tittle -->
+        <div class="row justify-content-center">
+            <div class="col-xl-7 col-lg-8 col-md-10">
+                <div class="section-tittle mb-60 text-center wow fadeInUp" data-wow-duration="2s" data-wow-delay=".2s">
+                    <h2>Shop<br>Products</h2>
+                </div>
+                <p align="center">
+                    @if (User.IsInRole("Admin"))
+            {
+                    <a asp-action="Create" class="genric-btn primary circle">Add New Product</a>
+            }
+                    <a asp-action="Index" class="genric-btn primary-border circle mx-4">Table View</a>
+                </p>
+            </div>
+        </div>
+        <div class="col-sm-4 offset-sm-4">
+            <form asp-action="TiledProducts" method="get">
+                @*
+                method="get" appends the key/value pairs from a form onto the query string in our URL
+                a ? in the URL indicates the beginning of a query string
+                everything you see after the ? is a key/value pair
+
+                ?searchTerm=WhateverTheUserSearchedFor
+                multiple key/value pairs are separated with an &
+                ?searchTerm=term&category=tool
+
+                These keys/values are passed to the action as arguments for the action's parameters.
+                public IActionResult TiledProducts(string searchTerm, string category)
+
+                SERVER SIDE FILTERING - STEP 02
+                Add the UI elements for a dropdown list for a dropdown list for the categories and a text input
+                for the user to submit a search term
+                *@
+                <label for="categoryId" class="control-label d-block text-center">Filter by Category</label>
+                <select name="categoryId" class="form-control text-center mb-3" asp-items="ViewBag.CategoryId">
+                    <option value="0">[Choose a Category]</option>
+                </select>
+
+                <input name="searchTerm" class="form-control text-center mb-3" placeholder="Search Products" />
+                <input type="submit" value="Go" class="genric-btn primary-border small text-center w-50 d-block mb-5" />
+            </form>
+            @*
+            SERVER SIDE FILTERING - STEP 03
+            Below is a conditionally rendered alert that tells the suer how many results their search
+            yielded and repeats their seach term back to them for an additional confirmation.
+            *@
+            @if (ViewBag.NbrResults != null)
+            {
+                <p class="mt-5 p-2 alert alert-warning text-center">
+                    Showing @ViewBag.NbrResults result@(ViewBag.NbrResults == 1 ? "" : "s") for '@ViewBag.SearchTerm'.
+                </p>
+            }
+        </div>
+        <div class="row">
+            
+            @foreach (var item in Model)
+            {
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".1s">
+                        <div class="popular-img">
+                            <img src="~/assets/img/@item.ProductImage" alt="@item.ProductName" longdesc="@item.ProductDescription" />
+                            <div class="favorit-items">
+                                <!-- <span class="flaticon-heart"></span> -->
+                                 @* <a href="javascript:void(0)" class="option2">
+                                    <img src="~/assets/img/gallery/favorit-card.png" alt="" /> 
+                                </a> *@ 
+
+                            </div>
+                        </div>
+                        <div class="popular-caption">
+                            <h3><a asp-action="Details" asp-route-id="@item.ProductId" class="option1">@item.ProductName</a></h3>
+                            <a asp-action="AddToCart" asp-controller="ShoppingCart" asp-route-id="@item.ProductId" class="option2 genric-btn default-border circle">
+                                Add To Cart
+                            </a>
+                            <span>@Html.DisplayFor(modelItem => item.ProductPrice)</span>
+                        </div>
+                    </div>
+                </div>
+            } 
+        </div>
+        <div class="row mt-5">
+            <div class="col-sm-2 offset-sm-5">
+                Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                <div class="w-100">
+                    @Html.PagedListPager(
+                             Model,
+                             page => Url.Action("TiledProducts", new { page, searchTerm = ViewBag.SearchTerm, categoryId = ViewBag.CategoryId })
+                             )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--? New Arrival End -->
